@@ -26,7 +26,32 @@ const VastuAura = () => {
   });
   const [currentScore, setCurrentScore] = useState(null);
   const [address, setAddress] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [mlsUrl, setMlsUrl] = useState('');
+
+  // Address Autocomplete Logic
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (address.length < 5) {
+        setSuggestions([]);
+        return;
+      }
+      try {
+        const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=5`);
+        const data = await res.json();
+        const results = data.features.map(f => {
+          const p = f.properties;
+          return [p.name, p.street, p.city, p.state, p.country].filter(Boolean).join(', ');
+        });
+        setSuggestions(results);
+        setShowSuggestions(true);
+      } catch (e) { console.error("Autocomplete error", e); }
+    };
+
+    const timeoutId = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(timeoutId);
+  }, [address]);
 
   // Persist rules in localStorage
   useEffect(() => {
@@ -34,11 +59,13 @@ const VastuAura = () => {
   }, [rules]);
 
   // Handle address/MLS URL submission
-  const handleAnalyze = async () => {
-    if (!address && !mlsUrl) return;
+  const handleAnalyze = async (selectedAddress) => {
+    const finalAddress = selectedAddress || address || mlsUrl;
+    if (!finalAddress) return;
     setLoading(true);
+    setShowSuggestions(false);
 
-    const simulatedRules = generateMockListingData(address || mlsUrl, rules);
+    const simulatedRules = generateMockListingData(finalAddress, rules);
     
     setTimeout(() => {
       const finalResult = calculateScore(simulatedRules);
@@ -225,8 +252,36 @@ const VastuAura = () => {
               <div className="input-group">
                 <label className="input-label">Property Address</label>
                 <div style={{ position: 'relative' }}>
-                  <input className="premium-input" placeholder="e.g. 123 Harmony St, San Francisco" value={address} onChange={(e) => setAddress(e.target.value)} />
+                  <input 
+                    className="premium-input" 
+                    placeholder="e.g. 123 Harmony St, San Francisco" 
+                    value={address} 
+                    onChange={(e) => setAddress(e.target.value)} 
+                  />
                   <Search size={18} color="var(--text-dim)" style={{ position: 'absolute', right: '15px', top: '15px' }} />
+                  
+                  {/* Suggestions Dropdown */}
+                  <AnimatePresence>
+                    {showSuggestions && suggestions.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        style={{ position: 'absolute', top: '60px', left: 0, right: 0, background: 'white', border: '1px solid var(--glass-border)', borderRadius: '12px', zIndex: 200, boxShadow: '0 10px 25px rgba(0,0,0,0.1)', overflow: 'hidden' }}
+                      >
+                        {suggestions.map((sug, i) => (
+                           <div 
+                              key={i} 
+                              onClick={() => { setAddress(sug); handleAnalyze(sug); }}
+                              style={{ padding: '12px 15px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', fontSize: '0.85rem', textAlign: 'left', display: 'flex', gap: '10px', alignItems: 'center' }}
+                              className="suggestion-item"
+                           >
+                             <Search size={14} color="#94a3b8" /> {sug}
+                           </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
 
