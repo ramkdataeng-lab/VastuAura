@@ -43,6 +43,7 @@ body {
   background: linear-gradient(135deg, #f8fafc, #f1f5f9);
   position: relative;
   box-shadow: 0 0 50px rgba(0,0,0,0.05);
+  padding-bottom: 120px; /* Space for floating nav */
 }
 
 h1, h2, h3 {
