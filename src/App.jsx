@@ -88,11 +88,11 @@ const VastuAura = () => {
       {/* Navigation */}
       <nav className="nav-bar">
         <h2 className="gold-gradient" style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '1.4rem' }}>
-          <img src={LogoImg} alt="Vastu Aura Logo" style={{ height: '60px', border: '1px solid var(--primary)' }} />
+          <img src={LogoImg} alt="Vastu Aura Logo" style={{ height: '85px', border: '1.5px solid var(--primary)', borderRadius: '10px' }} />
           Vastu Aura
         </h2>
         <button onClick={() => setView(view === 'admin' ? 'search' : 'admin')}>
-          <Settings size={22} color={view === 'admin' ? '#D4AF37' : '#a0a0a0'} />
+          <Settings size={22} color={view === 'admin' ? 'var(--primary)' : 'var(--text-dim)'} />
         </button>
       </nav>
 
@@ -111,7 +111,7 @@ const VastuAura = () => {
               <motion.img 
                 src={LogoImg} 
                 alt="Vastu Aura" 
-                style={{ width: '150px', marginBottom: '20px', border: '1px solid var(--primary)' }}
+                style={{ width: '220px', height: '220px', marginBottom: '25px', border: '2px solid var(--primary)', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
               />
@@ -129,7 +129,7 @@ const VastuAura = () => {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
-                  <Search size={18} color="#a0a0a0" style={{ position: 'absolute', right: '15px', top: '15px' }} />
+                  <Search size={18} color="var(--text-dim)" style={{ position: 'absolute', right: '15px', top: '15px' }} />
                 </div>
               </div>
 
@@ -142,7 +142,7 @@ const VastuAura = () => {
                     value={mlsUrl}
                     onChange={(e) => setMlsUrl(e.target.value)}
                   />
-                  <Database size={18} color="#a0a0a0" style={{ position: 'absolute', right: '15px', top: '15px' }} />
+                  <Database size={18} color="var(--text-dim)" style={{ position: 'absolute', right: '15px', top: '15px' }} />
                 </div>
               </div>
 
@@ -173,23 +173,23 @@ const VastuAura = () => {
               
               <div className="glass-card" style={{ marginBottom: '15px', textAlign: 'center' }}>
                 <h3 className="gold-gradient">{currentScore.verdict} Harmony</h3>
-                <p style={{ fontSize: '0.9rem', color: '#a0a0a0' }}>Property is {currentScore.score}% compliant with traditional Vastu Shastra.</p>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)' }}>Property is {currentScore.score}% compliant with traditional Vastu Shastra.</p>
               </div>
 
               {/* Key Highlights */}
               <div className="glass-card" style={{ padding: '15px' }}>
                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                    <div style={{ padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', textAlign: 'center' }}>
-                       <span style={{ fontSize: '0.75rem', color: '#a0a0a0', textTransform: 'uppercase' }}>Facing</span>
+                    <div style={{ padding: '10px', background: 'rgba(0,0,0,0.02)', borderRadius: '12px', textAlign: 'center' }}>
+                       <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>Facing</span>
                        <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--primary)' }}>{currentScore.facing}</div>
                     </div>
-                    <div style={{ padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', textAlign: 'center' }}>
-                       <span style={{ fontSize: '0.75rem', color: '#a0a0a0', textTransform: 'uppercase' }}>Main Door</span>
+                    <div style={{ padding: '10px', background: 'rgba(0,0,0,0.02)', borderRadius: '12px', textAlign: 'center' }}>
+                       <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>Main Door</span>
                        <div style={{ fontSize: '0.9rem', fontWeight: '700' }}>{currentScore.breakdown[0].condition}</div>
                     </div>
                  </div>
-                 <div style={{ marginTop: '15px', padding: '10px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#a0a0a0', textTransform: 'uppercase', display: 'block', textAlign: 'center', marginBottom: '8px' }}>Top Complainces</span>
+                 <div style={{ marginTop: '15px', padding: '10px', background: 'rgba(0,0,0,0.02)', borderRadius: '12px' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textTransform: 'uppercase', display: 'block', textAlign: 'center', marginBottom: '8px' }}>Top Complainces</span>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', justifyContent: 'center' }}>
                        {currentScore.breakdown.filter(i => i.isPositive).slice(0, 3).map((item, i) => (
                           <span key={i} className="badge badge-success" style={{ fontSize: '0.65rem' }}>{item.name}</span>
@@ -206,7 +206,7 @@ const VastuAura = () => {
                       <span style={{ fontWeight: '700', fontSize: '1rem', color: 'var(--primary)' }}>{category}</span>
                       <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>{Math.round(data.scoreTotal / data.count)}% Match</span>
                     </div>
-                    <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', marginBottom: '15px', overflow: 'hidden' }}>
+                    <div style={{ height: '6px', background: 'rgba(0,0,0,0.05)', borderRadius: '3px', marginBottom: '15px', overflow: 'hidden' }}>
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${data.scoreTotal / data.count}%` }}
@@ -214,12 +214,12 @@ const VastuAura = () => {
                       />
                     </div>
                     {data.items.map((item, idx) => (
-                      <div key={idx} style={{ padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                      <div key={idx} style={{ padding: '12px 0', borderBottom: '1px solid rgba(0,0,0,0.03)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                           <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>{item.name}</span>
                           <span style={{ fontSize: '0.8rem', color: item.isPositive ? '#10b981' : '#ef4444' }}>{item.points} pts</span>
                         </div>
-                        <p style={{ fontSize: '0.75rem', color: '#a0a0a0', lineHeight: '1.4' }}>{item.condition}: {item.recommendation}</p>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', lineHeight: '1.4' }}>{item.condition}: {item.recommendation}</p>
                       </div>
                     ))}
                   </div>
@@ -228,7 +228,7 @@ const VastuAura = () => {
 
               <div className="glass-card" style={{ marginBottom: '40px' }}>
                 <h3>Professional Advice</h3>
-                <p style={{ fontSize: '0.9rem', color: '#a0a0a0', margin: '10px 0' }}>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-dim)', margin: '10px 0' }}>
                   Every home unique. Our certified Vastu consultants can provide a personalized architectural plan for corrections.
                 </p>
                 <button className="btn-secondary" style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
