@@ -30,26 +30,42 @@ const VastuAura = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [mlsUrl, setMlsUrl] = useState('');
 
-  // Address Autocomplete Logic
+  // Address Autocomplete Logic (Google Maps + Fallback)
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (address.length < 5) {
         setSuggestions([]);
         return;
       }
-      try {
-        const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=5`);
-        const data = await res.json();
-        const results = data.features.map(f => {
-          const p = f.properties;
-          return [p.name, p.street, p.city, p.state, p.country].filter(Boolean).join(', ');
+
+      // Try Google Places First
+      if (window.google && window.google.maps && window.google.maps.places) {
+        const service = new window.google.maps.places.AutocompleteService();
+        service.getPlacePredictions({ 
+          input: address, 
+          componentRestrictions: { country: 'us' } // Precise US focus
+        }, (predictions, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
+            setSuggestions(predictions.map(p => p.description));
+            setShowSuggestions(true);
+          }
         });
-        setSuggestions(results);
-        setShowSuggestions(true);
-      } catch (e) { console.error("Autocomplete error", e); }
+      } else {
+        // Fallback to high-speed Photon geocoder if Google script is blocked or missing key
+        try {
+          const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=5&location_bias=us`);
+          const data = await res.json();
+          const results = data.features.map(f => {
+            const p = f.properties;
+            return [p.name || p.street, p.city, p.state, 'USA'].filter(Boolean).join(', ');
+          });
+          setSuggestions(results);
+          setShowSuggestions(true);
+        } catch (e) { console.error("Autocomplete error", e); }
+      }
     };
 
-    const timeoutId = setTimeout(fetchSuggestions, 300);
+    const timeoutId = setTimeout(fetchSuggestions, 350);
     return () => clearTimeout(timeoutId);
   }, [address]);
 
