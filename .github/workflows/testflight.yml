@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: macos-latest
+    environment: dev
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
