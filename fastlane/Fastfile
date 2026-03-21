@@ -11,13 +11,12 @@ platform :ios do
     # Find the workspace file (handles name mismatches)
     workspace = Dir.glob("*.xcworkspace").first
 
-    # Build the app using Xcode Cloud-managed signing
+    # Build the app using Xcode Cloud-managed signing (passing keys directly to xcodebuild)
     build_app(
       scheme: "App",
       workspace: workspace,
       export_method: "app-store",
-      api_key: api_key,
-      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} -allowProvisioningUpdates"
+      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} -allowProvisioningUpdates -authenticationKeyPath AuthKey.p8 -authenticationKeyID #{ENV['APP_STORE_CONNECT_KEY_ID']} -authenticationKeyIssuerID #{ENV['APP_STORE_CONNECT_ISSUER_ID']}"
     )
 
     # Upload to TestFlight
