@@ -8,22 +8,12 @@ platform :ios do
       key_filepath: "AuthKey.p8"
     )
 
-    # Get the provisioning profiles
-    get_provisioning_profile(
-      api_key: api_key,
-      app_identifier: "com.vastu.aura",
-      team_id: ENV["APPLE_TEAM_ID"]
-    )
-
-    # Find the workspace file (handles name mismatches)
-    workspace = Dir.glob("*.xcworkspace").first
-
-    # Build the app
+    # Build the app using Xcode Cloud-managed signing
     build_app(
       scheme: "App",
       workspace: workspace,
       export_method: "app-store",
-      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']}"
+      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} -allowProvisioningUpdates"
     )
 
     # Upload to TestFlight
