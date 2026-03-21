@@ -11,12 +11,13 @@ platform :ios do
     # Find the workspace file (handles name mismatches)
     workspace = Dir.glob("*.xcworkspace").first
 
-    # Build the app using Xcode Cloud-managed signing (passing keys directly to xcodebuild)
+    # Build the app with raw logs enabled to catch the specific error
     build_app(
       scheme: "App",
       workspace: workspace,
       export_method: "app-store",
-      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} -allowProvisioningUpdates -authenticationKeyPath AuthKey.p8 -authenticationKeyID #{ENV['APP_STORE_CONNECT_KEY_ID']} -authenticationKeyIssuerID #{ENV['APP_STORE_CONNECT_ISSUER_ID']}"
+      disable_xcpretty: true, # Show raw logs to find the real error
+      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates -authenticationKeyPath #{Dir.pwd}/AuthKey.p8 -authenticationKeyID #{ENV['APP_STORE_CONNECT_KEY_ID']} -authenticationKeyIssuerID #{ENV['APP_STORE_CONNECT_ISSUER_ID']}"
     )
 
     # Upload to TestFlight
