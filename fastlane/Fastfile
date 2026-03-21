@@ -16,6 +16,7 @@ platform :ios do
       scheme: "App",
       workspace: workspace,
       export_method: "app-store",
+      api_key: api_key,
       xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} -allowProvisioningUpdates"
     )
 
