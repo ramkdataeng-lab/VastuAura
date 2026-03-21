@@ -15,15 +15,23 @@ import {
   Compass as CompassIcon
 } from 'lucide-react';
 import { DEFAULT_RULES, calculateScore, generateMockListingData } from './utils/VastuEngine';
+import { RevenueCatService } from './utils/RevenueCatService';
 import LogoImg from './logo/Final_logo.jpg';
 
 const VastuAura = () => {
   const [view, setView] = useState('search'); // search, dashboard, admin, compass
   const [loading, setLoading] = useState(false);
+  const [isPro, setIsPro] = useState(false);
   const [rules, setRules] = useState(() => {
     const savedRules = localStorage.getItem('vastuaura-rules');
     return savedRules ? JSON.parse(savedRules) : DEFAULT_RULES;
   });
+
+  // Initialize RevenueCat and Rules
+  useEffect(() => {
+    RevenueCatService.init().catch(console.error);
+    RevenueCatService.isPro().then(setIsPro);
+  }, []);
   const [currentScore, setCurrentScore] = useState(null);
   const [address, setAddress] = useState('');
   const [suggestions, setSuggestions] = useState([]);
