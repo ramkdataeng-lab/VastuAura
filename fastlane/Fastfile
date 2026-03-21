@@ -8,6 +8,9 @@ platform :ios do
       key_filepath: "AuthKey.p8"
     )
 
+    # Find the workspace file (handles name mismatches)
+    workspace = Dir.glob("*.xcworkspace").first
+
     # Build the app using Xcode Cloud-managed signing
     build_app(
       scheme: "App",
