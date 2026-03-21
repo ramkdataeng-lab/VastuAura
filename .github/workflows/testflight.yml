@@ -29,6 +29,7 @@ jobs:
           npx cap add ios
           npx cap copy ios
           npx cap update ios
+          cp -R fastlane ios/App/fastlane
 
       - name: Setup Fastlane
         run: gem install fastlane
