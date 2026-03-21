@@ -15,7 +15,8 @@ platform :ios do
     build_app(
       scheme: "App",
       workspace: workspace,
-      export_method: "app-store"
+      export_method: "app-store",
+      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']}"
     )
 
     # Upload to TestFlight
