@@ -1,5 +1,5 @@
-app_identifier("com.vastu.aura") # The bundle identifier of your app
-apple_id(ENV["APPLE_ID"]) # Your Apple ID
+app_identifier("com.vastu.aura")
+apple_id(ENV["APPLE_ID"])
 
-itc_team_id("YOUR_TEAM_ID") # App Store Connect Team ID (optional)
-team_id("YOUR_TEAM_ID") # Developer Portal Team ID (optional)
+itc_team_id(ENV["APPLE_TEAM_ID"])
+team_id(ENV["APPLE_TEAM_ID"])

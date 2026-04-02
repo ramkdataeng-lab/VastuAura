@@ -27,9 +27,8 @@ jobs:
 
       - name: Setup Capacitor iOS
         run: |
-          npx cap add ios
-          npx cap copy ios
-          npx cap update ios
+          npx cap add ios || true
+          npx cap sync ios
           cp -R fastlane ios/App/fastlane
 
       - name: Setup Fastlane
@@ -47,9 +46,8 @@ jobs:
           ls -R ios
           cd ios/App
           if [[ "$APP_STORE_CONNECT_KEY_CONTENT" == *"BEGIN"* ]]; then
-            echo "$APP_STORE_CONNECT_KEY_CONTENT" > raw.p8
+            echo "$APP_STORE_CONNECT_KEY_CONTENT" > AuthKey.p8
           else
-            echo "$APP_STORE_CONNECT_KEY_CONTENT" | base64 --decode > raw.p8
+            echo "$APP_STORE_CONNECT_KEY_CONTENT" | base64 --decode > AuthKey.p8
           fi
-          openssl ec -in raw.p8 -out AuthKey.p8
           fastlane ios beta
