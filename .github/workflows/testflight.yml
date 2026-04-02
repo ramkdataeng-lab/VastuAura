@@ -42,12 +42,12 @@ jobs:
           APP_STORE_CONNECT_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          echo "Listing iOS directory structure:"
-          ls -R ios
           cd ios/App
           if [[ "$APP_STORE_CONNECT_KEY_CONTENT" == *"BEGIN"* ]]; then
             echo "$APP_STORE_CONNECT_KEY_CONTENT" > AuthKey.p8
           else
             echo "$APP_STORE_CONNECT_KEY_CONTENT" | base64 --decode > AuthKey.p8
           fi
+          # List schemes to verify 'App' is the correct one
+          xcodebuild -list -workspace App.xcworkspace
           fastlane ios beta
