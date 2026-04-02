@@ -29,7 +29,7 @@ const VastuAura = () => {
     if (path === '/privacy') setView('privacy');
     else if (path === '/support') setView('support');
   }, []);
-  const [rules, setRules] = useState(() => {
+  const [rules] = useState(() => {
     const savedRules = localStorage.getItem('vastuaura-rules');
     return savedRules ? JSON.parse(savedRules) : DEFAULT_RULES;
   });
@@ -186,7 +186,7 @@ const VastuAura = () => {
           try {
             const res = await DeviceOrientationEvent.requestPermission();
             if (res === 'granted') window.addEventListener('deviceorientation', handleOrientation);
-          } catch (e) { alert("Permission required for compass"); }
+          } catch { alert("Permission required for compass"); }
         } else {
           window.addEventListener('deviceorientation', handleOrientation);
         }

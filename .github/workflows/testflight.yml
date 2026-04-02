@@ -28,15 +28,23 @@ jobs:
       - name: Setup Capacitor iOS
         run: |
           npx cap add ios
+          
+          # Create assets directory for generating icons/splash
+          mkdir -p assets
+          
+          # Convert Final_logo.jpg to PNG using macOS built-in sips tool
+          sips -s format png src/logo/Final_logo.jpg --out assets/icon.png
+          cp assets/icon.png assets/splash.png
+          cp assets/icon.png assets/splash-dark.png
+          
+          # Generate all native assets (icons and splash screens)
+          # We use npx to run @capacitor/assets without adding it to devDependencies
+          npx @capacitor/assets generate --ios
+          
           npx cap sync ios
           echo "Finding xcworkspace location:"
           # Find the main workspace, avoiding internal ones inside .xcodeproj
           find ios -name "*.xcworkspace" -not -path "*.xcodeproj/*"
-          
-          # Force copy fastlane to both potential locations just to be safe
-          mkdir -p ios/App
-          cp -R fastlane ios/App/
-          cp -R fastlane ios/
 
       - name: Setup Fastlane
         run: gem install fastlane
@@ -49,6 +57,16 @@ jobs:
           APP_STORE_CONNECT_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          # Set an absolute path for the auth key that works in all steps
+          export AUTH_KEY_PATH="${GITHUB_WORKSPACE}/fastlane/AuthKey.p8"
+          mkdir -p "${GITHUB_WORKSPACE}/fastlane"
+          
+          if [[ "$APP_STORE_CONNECT_KEY_CONTENT" == *"BEGIN"* ]]; then
+            echo "$APP_STORE_CONNECT_KEY_CONTENT" > "$AUTH_KEY_PATH"
+          else
+            echo "$APP_STORE_CONNECT_KEY_CONTENT" | base64 --decode > "$AUTH_KEY_PATH"
+          fi
+          
           # Find the main workspace OR project, avoiding internal ones inside bundles
           WORKSPACE=$(find ios -name "*.xcworkspace" -not -path "*.xcodeproj/*" | head -n 1)
           if [ -z "$WORKSPACE" ]; then
@@ -59,19 +77,11 @@ jobs:
           WORKSPACE_NAME=$(basename "$WORKSPACE")
           echo "Found Main Project/Workspace: $WORKSPACE_NAME in $WORKSPACE_DIR"
           
+          # Force sync fastlane directory into the workspace (overwriting if exists)
+          rm -rf "$WORKSPACE_DIR/fastlane"
+          cp -R fastlane "$WORKSPACE_DIR/"
+          
           cd "$WORKSPACE_DIR"
-          # Ensure fastlane was copied here correctly
-          if [ ! -d "fastlane" ]; then
-            mkdir -p fastlane
-            cp -R ../../fastlane/* ./fastlane/ || cp -R ../fastlane/* ./fastlane/
-          fi
-          
-          if [[ "$APP_STORE_CONNECT_KEY_CONTENT" == *"BEGIN"* ]]; then
-            echo "$APP_STORE_CONNECT_KEY_CONTENT" > /tmp/AuthKey.p8
-          else
-            echo "$APP_STORE_CONNECT_KEY_CONTENT" | base64 --decode > /tmp/AuthKey.p8
-          fi
-          
           # List schemes to verify the correct one
           xcodebuild -list -project "$WORKSPACE_NAME" || xcodebuild -list -workspace "$WORKSPACE_NAME"
           # Run fastlane with the detected project/workspace
