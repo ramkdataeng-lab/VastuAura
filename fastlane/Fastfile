@@ -18,8 +18,7 @@ platform :ios do
       workspace: is_workspace ? target : nil,
       project: is_workspace ? nil : target,
       export_method: "app-store",
-      api_key: api_key, # Pass authentication key directly to gym
-      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates"
+      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates -authenticationKeyPath AuthKey.p8 -authenticationKeyID #{ENV['APP_STORE_CONNECT_KEY_ID']} -authenticationKeyIssuerID #{ENV['APP_STORE_CONNECT_ISSUER_ID']}"
     )
 
     # Upload to TestFlight
