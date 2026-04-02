@@ -27,9 +27,12 @@ jobs:
 
       - name: Setup Capacitor iOS
         run: |
-          npx cap add ios || true
+          npx cap add ios
           npx cap sync ios
-          cp -R fastlane ios/App/fastlane
+          echo "Finding xcworkspace location:"
+          find ios -name "*.xcworkspace"
+          ls -la ios/App || ls -la ios
+          cp -R fastlane ios/App/fastlane || cp -R fastlane ios/fastlane
 
       - name: Setup Fastlane
         run: gem install fastlane
@@ -42,12 +45,19 @@ jobs:
           APP_STORE_CONNECT_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          cd ios/App
+          WORKSPACE=$(find ios -name "*.xcworkspace" | head -n 1)
+          WORKSPACE_DIR=$(dirname "$WORKSPACE")
+          WORKSPACE_NAME=$(basename "$WORKSPACE")
+          echo "Found Workspace: $WORKSPACE_NAME in $WORKSPACE_DIR"
+          
+          cd "$WORKSPACE_DIR"
           if [[ "$APP_STORE_CONNECT_KEY_CONTENT" == *"BEGIN"* ]]; then
             echo "$APP_STORE_CONNECT_KEY_CONTENT" > AuthKey.p8
           else
             echo "$APP_STORE_CONNECT_KEY_CONTENT" | base64 --decode > AuthKey.p8
           fi
-          # List schemes to verify 'App' is the correct one
-          xcodebuild -list -workspace App.xcworkspace
-          fastlane ios beta
+          
+          # List schemes to verify the correct one
+          xcodebuild -list -workspace "$WORKSPACE_NAME"
+          # Run fastlane from where the workspace is
+          fastlane ios beta workspace:"$WORKSPACE_NAME"
