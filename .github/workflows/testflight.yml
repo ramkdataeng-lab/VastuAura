@@ -67,9 +67,9 @@ jobs:
           fi
           
           if [[ "$APP_STORE_CONNECT_KEY_CONTENT" == *"BEGIN"* ]]; then
-            echo "$APP_STORE_CONNECT_KEY_CONTENT" > AuthKey.p8
+            echo "$APP_STORE_CONNECT_KEY_CONTENT" > /tmp/AuthKey.p8
           else
-            echo "$APP_STORE_CONNECT_KEY_CONTENT" | base64 --decode > AuthKey.p8
+            echo "$APP_STORE_CONNECT_KEY_CONTENT" | base64 --decode > /tmp/AuthKey.p8
           fi
           
           # List schemes to verify the correct one
