@@ -19,9 +19,16 @@ import { RevenueCatService } from './utils/RevenueCatService';
 import LogoImg from './logo/Final_logo.jpg';
 
 const VastuAura = () => {
-  const [view, setView] = useState('search'); // search, dashboard, admin, compass
+  const [view, setView] = useState('search'); // search, dashboard, admin, compass, privacy, support
   const [loading, setLoading] = useState(false);
   const [isPro, setIsPro] = useState(false);
+  
+  // Add path-based routing for Vercel
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/privacy') setView('privacy');
+    else if (path === '/support') setView('support');
+  }, []);
   const [rules, setRules] = useState(() => {
     const savedRules = localStorage.getItem('vastuaura-rules');
     return savedRules ? JSON.parse(savedRules) : DEFAULT_RULES;
@@ -97,6 +104,40 @@ const VastuAura = () => {
       setLoading(false);
       setView('dashboard');
     }, 2500);
+  };
+
+  const handlePremium = async () => {
+    if (isPro) {
+      alert("You are already a Pro member! Connecting you with an expert via email...");
+      return;
+    }
+    
+    setLoading(true);
+    const offerings = await RevenueCatService.getOfferings();
+    if (offerings && offerings.availablePackages.length > 0) {
+      const result = await RevenueCatService.purchasePackage(offerings.availablePackages[0]);
+      if (result.success) {
+        setIsPro(true);
+        alert("Welcome to Vastu Aura Pro!");
+      } else if (!result.userCancelled) {
+        alert("Purchase failed: " + result.error);
+      }
+    } else {
+      alert("Premium offers are not available in your region yet.");
+    }
+    setLoading(false);
+  };
+
+  const handleRestore = async () => {
+    setLoading(true);
+    // In a real app, you would call RevenueCatService.restoreTransactions()
+    // For now, we'll simulate a check
+    setTimeout(async () => {
+       const pro = await RevenueCatService.isPro();
+       setIsPro(pro);
+       alert(pro ? "Purchases Restored!" : "No active subscriptions found.");
+       setLoading(false);
+    }, 1500);
   };
 
   const ScoreGauge = ({ score }) => {
@@ -371,8 +412,19 @@ const VastuAura = () => {
             </div>
 
             <div className="glass-card" style={{ marginBottom: '50px' }}>
-              <button className="btn-primary">Connect with Vastu Expert</button>
+              <button className="btn-primary" onClick={handlePremium}>
+                {isPro ? "Chat with Vastu Expert" : "Unlock Expert Consultation"}
+              </button>
               <button className="btn-secondary" style={{ marginTop: '12px' }} onClick={() => setView('search')}>New Analysis</button>
+              
+              <div style={{ marginTop: '25px', textAlign: 'center' }}>
+                <button 
+                  onClick={handleRestore}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '0.8rem', textDecoration: 'underline', cursor: 'pointer' }}
+                >
+                  Restore Previous Purchases
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
@@ -390,6 +442,33 @@ const VastuAura = () => {
               <button className="btn-primary" onClick={() => setView('search')} style={{ background: 'var(--text)' }}>Back to App</button>
             </div>
           </motion.div>
+        )}
+        {view === 'privacy' && (
+           <motion.div key="privacy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '40px 24px', maxWidth: '800px', margin: '0 auto', color: 'var(--text)' }}>
+              <div className="glass-card" style={{ textAlign: 'left', padding: '30px' }}>
+                <h1 className="gold-gradient">Privacy Policy</h1>
+                <p><strong>Effective Date: April 1, 2026</strong></p>
+                <p>This Privacy Policy describes how Vastu Aura collects, uses, and shares your information.</p>
+                <h3>1. Information We Collect</h3>
+                <p>We collect location data for property analysis and purchase history via RevenueCat to manage your subscription.</p>
+                <h3>2. Third-Party Services</h3>
+                <p>We use Google Places API and RevenueCat. These services have their own privacy policies.</p>
+                <button className="btn-primary" onClick={() => { window.history.pushState({}, '', '/'); setView('search'); }} style={{ marginTop: '30px' }}>Back to App</button>
+              </div>
+           </motion.div>
+        )}
+
+        {view === 'support' && (
+           <motion.div key="support" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '40px 24px', maxWidth: '800px', margin: '0 auto', color: 'var(--text)' }}>
+              <div className="glass-card" style={{ textAlign: 'left', padding: '30px' }}>
+                <h1 className="gold-gradient">Support</h1>
+                <p>Need help with Vastu Aura? We are here to assist you.</p>
+                <h3>Contact Us</h3>
+                <p>Email: support@vastuaura.com</p>
+                <p>Response Time: Within 24-48 hours.</p>
+                <button className="btn-primary" onClick={() => { window.history.pushState({}, '', '/'); setView('search'); }} style={{ marginTop: '30px' }}>Back to App</button>
+              </div>
+           </motion.div>
         )}
       </AnimatePresence>
     </div>
