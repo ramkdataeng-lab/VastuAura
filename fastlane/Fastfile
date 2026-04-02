@@ -8,13 +8,15 @@ platform :ios do
       key_filepath: "AuthKey.p8"
     )
 
-    # Use workspace from options or default to App.xcworkspace
-    target_workspace = options[:workspace] || "App.xcworkspace"
+    # Use correctly detected project or workspace from options
+    target = options[:workspace] || "App.xcworkspace"
+    is_workspace = target.include?(".xcworkspace")
 
     # Build the app specifically for Capacitor App scheme
     build_app(
       scheme: "App",
-      workspace: target_workspace,
+      workspace: is_workspace ? target : nil,
+      project: is_workspace ? nil : target,
       export_method: "app-store",
       api_key: api_key, # Pass authentication key directly to gym
       xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates"
